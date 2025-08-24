@@ -1,7 +1,9 @@
 package com.busbooking.core;
 
+import com.busbooking.exception.DuplicateCredentialsException;
 import com.busbooking.exception.InvalidCredentialsException;
 import com.busbooking.exception.InvalidSelectionException;
+import com.busbooking.exception.MissingCredentialsException;
 import com.busbooking.exception.SeatAlreadyBookedException;
 import com.busbooking.model.Seat;
 
@@ -88,15 +90,50 @@ public class BusService extends AbstractBusService {
 
     @Override
     public void bookSeat(int routeIndex, int dayIndex, int timeIndex, int seatIndex, String name, String id, String phone)
-            throws InvalidSelectionException, SeatAlreadyBookedException {
+            throws InvalidSelectionException, SeatAlreadyBookedException, MissingCredentialsException, DuplicateCredentialsException {
         validateIndices(routeIndex, dayIndex, timeIndex, seatIndex);
+        
+        // Validate required fields
+        if (name == null || name.trim().isEmpty()) {
+            throw new MissingCredentialsException("Name is required");
+        }
+        if (id == null || id.trim().isEmpty()) {
+            throw new MissingCredentialsException("ID is required");
+        }
+        if (phone == null || phone.trim().isEmpty()) {
+            throw new MissingCredentialsException("Phone number is required");
+        }
+        
+        // Check for duplicate credentials across all routes, days, times, and seats
+        for (int r = 0; r < MAX_ROUTES; r++) {
+            for (int d = 0; d < MAX_DAYS; d++) {
+                for (int t = 0; t < MAX_TIMES; t++) {
+                    for (int s = 0; s < MAX_SEATS; s++) {
+                        if (booked[r][d][t][s]) {
+                            Seat existingSeat = seats[r][d][t][s];
+                            if (name.trim().equalsIgnoreCase(existingSeat.getName().trim())) {
+                                throw new DuplicateCredentialsException("Name already exists in another booking");
+                            }
+                            if (id.trim().equalsIgnoreCase(existingSeat.getId().trim())) {
+                                throw new DuplicateCredentialsException("ID already exists in another booking");
+                            }
+                            if (phone.trim().equals(existingSeat.getPhone().trim())) {
+                                throw new DuplicateCredentialsException("Phone number already exists in another booking");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
         if (booked[routeIndex][dayIndex][timeIndex][seatIndex]) {
             throw new SeatAlreadyBookedException("Seat already booked");
         }
+        
         Seat seat = seats[routeIndex][dayIndex][timeIndex][seatIndex];
-        seat.setName(name);
-        seat.setId(id);
-        seat.setPhone(phone);
+        seat.setName(name.trim());
+        seat.setId(id.trim());
+        seat.setPhone(phone.trim());
         seat.setBooked(true);
         booked[routeIndex][dayIndex][timeIndex][seatIndex] = true;
         persist();

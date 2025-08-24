@@ -1,7 +1,9 @@
 package com.busbooking.core;
 
+import com.busbooking.exception.DuplicateCredentialsException;
 import com.busbooking.exception.InvalidCredentialsException;
 import com.busbooking.exception.InvalidSelectionException;
+import com.busbooking.exception.MissingCredentialsException;
 import com.busbooking.exception.SeatAlreadyBookedException;
 import com.busbooking.model.Seat;
 
@@ -19,7 +21,7 @@ public abstract class AbstractBusService {
     public abstract Seat getSeat(int routeIndex, int dayIndex, int timeIndex, int seatIndex) throws InvalidSelectionException;
 
     public abstract void bookSeat(int routeIndex, int dayIndex, int timeIndex, int seatIndex, String name, String id, String phone)
-            throws InvalidSelectionException, SeatAlreadyBookedException;
+            throws InvalidSelectionException, SeatAlreadyBookedException, MissingCredentialsException, DuplicateCredentialsException;
 
     public abstract void cancelSeat(int routeIndex, int dayIndex, int timeIndex, int seatIndex, String id, String phone) throws InvalidSelectionException, InvalidCredentialsException;
 

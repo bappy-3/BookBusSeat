@@ -2,7 +2,9 @@ package com.busbooking.ui;
 
 import com.busbooking.core.AbstractBusService;
 import com.busbooking.core.BusService;
+import com.busbooking.exception.DuplicateCredentialsException;
 import com.busbooking.exception.InvalidSelectionException;
+import com.busbooking.exception.MissingCredentialsException;
 import com.busbooking.exception.SeatAlreadyBookedException;
 import com.busbooking.model.Seat;
 
@@ -150,6 +152,10 @@ public class BusBookingApp extends JFrame {
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Invalid number", "Error", JOptionPane.ERROR_MESSAGE);
         } catch (SeatAlreadyBookedException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (MissingCredentialsException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (DuplicateCredentialsException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } catch (InvalidSelectionException ex) {
             JOptionPane.showMessageDialog(this, "Invalid selection", "Error", JOptionPane.ERROR_MESSAGE);
