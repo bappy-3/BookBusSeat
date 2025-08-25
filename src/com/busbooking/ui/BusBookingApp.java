@@ -139,7 +139,7 @@ public class BusBookingApp extends JFrame {
             JPanel panel = new JPanel(new GridLayout(0, 1));
             panel.add(new JLabel("Name:"));
             panel.add(nameField);
-            panel.add(new JLabel("ID:"));
+            panel.add(new JLabel("ID (10 Digit):"));
             panel.add(idField);
             panel.add(new JLabel("Phone:"));
             panel.add(phoneField);

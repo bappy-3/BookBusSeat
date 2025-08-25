@@ -92,18 +92,19 @@ public class BusService extends AbstractBusService {
     public void bookSeat(int routeIndex, int dayIndex, int timeIndex, int seatIndex, String name, String id, String phone)
             throws InvalidSelectionException, SeatAlreadyBookedException, MissingCredentialsException, DuplicateCredentialsException {
         validateIndices(routeIndex, dayIndex, timeIndex, seatIndex);
-        
+
         // Validate required fields
         if (name == null || name.trim().isEmpty()) {
             throw new MissingCredentialsException("Name is required");
         }
-        if (id == null || id.trim().isEmpty()) {
-            throw new MissingCredentialsException("ID is required");
+        //ID should contain 10 digits
+        if (id == null || id.trim().isEmpty() || !id.matches("\\d{10}")) {
+            throw new MissingCredentialsException("ID is not valid");
         }
-        if (phone == null || phone.trim().isEmpty()) {
-            throw new MissingCredentialsException("Phone number is required");
+        if (phone == null || phone.trim().isEmpty() || !phone.matches("\\d{11}")) {
+            throw new MissingCredentialsException("Phone number is not valid");
         }
-        
+
         // Check for duplicate credentials across all routes, days, times, and seats
         for (int r = 0; r < MAX_ROUTES; r++) {
             for (int d = 0; d < MAX_DAYS; d++) {
@@ -111,9 +112,9 @@ public class BusService extends AbstractBusService {
                     for (int s = 0; s < MAX_SEATS; s++) {
                         if (booked[r][d][t][s]) {
                             Seat existingSeat = seats[r][d][t][s];
-                            if (name.trim().equalsIgnoreCase(existingSeat.getName().trim())) {
-                                throw new DuplicateCredentialsException("Name already exists in another booking");
-                            }
+//                            if (name.trim().equalsIgnoreCase(existingSeat.getName().trim())) {
+//                                throw new DuplicateCredentialsException("Name already exists in another booking");
+//                            }
                             if (id.trim().equalsIgnoreCase(existingSeat.getId().trim())) {
                                 throw new DuplicateCredentialsException("ID already exists in another booking");
                             }
@@ -125,11 +126,11 @@ public class BusService extends AbstractBusService {
                 }
             }
         }
-        
+
         if (booked[routeIndex][dayIndex][timeIndex][seatIndex]) {
             throw new SeatAlreadyBookedException("Seat already booked");
         }
-        
+
         Seat seat = seats[routeIndex][dayIndex][timeIndex][seatIndex];
         seat.setName(name.trim());
         seat.setId(id.trim());
@@ -175,4 +176,5 @@ public class BusService extends AbstractBusService {
         }
     }
 }
+
 
